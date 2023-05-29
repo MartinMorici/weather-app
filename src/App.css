@@ -40,3 +40,21 @@
 .read-the-docs {
   color: #888;
 }
+
+
+.spinner {
+   width: 30px;
+   height: 30px;
+   border-radius: 50%;
+   border: 6px solid;
+   border-color: #dbdcef;
+   border-right-color: #646cffaa;
+   animation: spinner-d3wgkg 1s infinite linear;
+}
+
+@keyframes spinner-d3wgkg {
+   to {
+      transform: rotate(1turn);
+   }
+}
+
