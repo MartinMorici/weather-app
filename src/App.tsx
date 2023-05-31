@@ -1,75 +1,10 @@
-import { ChangeEvent, ChangeEventHandler, useEffect, useState } from 'react';
 import './App.css';
-
-interface Location {
-  latitude: number;
-  longitude: number;
-}
-
-interface Weather {
-  city: {
-    name: string;
-    id: number;
-    country: string;
-    coord: {
-      lat: number;
-      lon: number;
-    };
-  };
-  cnt: number;
-  cod: string;
-  list: [
-    {
-      dt: number;
-      main: {
-        temp: number;
-        temp_max: number;
-        temp_min: number;
-      };
-    }
-  ];
-  message: number;
-}
-
-interface City {
-  id: number;
-  name: string;
-  lon: number;
-  lat: number;
-}
-
-const cities = [
-  {
-    id: 0,
-    name: 'London',
-    lon: -0.1278,
-    lat: 51.5074,
-  },
-  {
-    id: 1,
-    name: 'Paris',
-    lon: 2.3522,
-    lat: 48.8566,
-  },
-  {
-    id: 2,
-    name: 'Tokyo',
-    lon: 139.6917,
-    lat: 35.6895,
-  },
-  {
-    id: 3,
-    name: 'Rio De Janeiro',
-    lon: -43.1729,
-    lat: -22.9068,
-  },
-  {
-    id: 4,
-    name: 'Mexico City',
-    lon: -99.1332,
-    lat: 19.4326,
-  },
-];
+import { useEffect, useState } from 'react';
+import { Location, Weather } from './types';
+import { cities } from './cities';
+import Water from './assets/water-solid.svg';
+import Wind from './assets/wind-solid.svg';
+import Cloudsun from './assets/cloud-sun-rain-solid.svg';
 
 function App() {
   const [weather, setWeather] = useState<Weather>();
@@ -84,6 +19,7 @@ function App() {
       latitude: selectedCity!.lat,
       longitude: selectedCity!.lon,
     };
+
     fetchWeather(location);
   };
 
@@ -108,9 +44,12 @@ function App() {
       setLoading(true);
       const data = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${location.latitude}&lon=${location.longitude}&appid=63fecd75520bd0cbbca13cbd49b2478f&units=metric`);
       const resp = await data.json();
-
       console.log(resp);
-      setWeather(resp);
+
+      const { 0: first, 8: second, 16: third, 24: fourth, 32: fifth } = resp.list;
+      const filteredList = [first, second, third, fourth, fifth];
+
+      setWeather({ ...resp, list: filteredList });
       setLoading(false);
     }
   };
@@ -120,11 +59,11 @@ function App() {
   }, [location]);
 
   if (loading) {
-    return <div className='spinner'></div>
+    return <div className='spinner'></div>;
   }
 
   return (
-    <main>
+    <main className='w-full'>
       {!weather && <button onClick={getCurrentLocation}>Get Weather In Your Location</button>}
       {weather && (
         <section>
@@ -136,16 +75,51 @@ function App() {
               </option>
             ))}
           </select>
+
           <h1>{weather.city.name}</h1>
-          <ul>
-            {weather.list.map((day) => {
-              return <li key={day.dt}>{day.main.temp}</li>;
-            })}
-          </ul>
+
+          {weather.list.map((day) => {
+            const fecha = new Date(day.dt * 1000);
+            return (
+              <article className='rounded-l-xl bg-[#323546] mb-4 max-w-[400px] w-full mx-auto' key={day.dt}>
+                <header className='flex justify-between rounded-tl-xl py-2 px-4 bg-[#2C2F3E]'>
+                  <span>{fecha.toLocaleString('en-EN', { weekday: 'long' })}</span>
+                  <div className='flex gap-1'>
+                    <span>{fecha.toLocaleString('en-EN', { day: 'numeric' })}</span>
+                    <span>{fecha.toLocaleString('en-EN', { month: 'short' })}</span>
+                  </div>
+                </header>
+                <main className=' px-4 mb-7 '>
+                  <h2 className='text-left pt-6 mb-4 '>{weather.city.name}</h2>
+                  <div className='flex items-end'>
+                    <h2 className='font-bold text-6xl mt-[-5px]'>{day.main.temp.toFixed(0)}°C</h2>
+                    <img className='w-28 h-[3.5rem] object-cover mb-[-2px] ml-4' src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`} alt='' />
+                  </div>
+                </main>
+                <footer className='flex text-sm items-center gap-4 px-4 pb-8 text-[#7A7D84] font-semibold '>
+                  <div className='flex '>
+                    <img className='w-[22px]' src={Water} alt='' />
+                    <span className='block ml-1'>{day.main.humidity}%</span>
+                  </div>
+                  <div className='flex'>
+                    <img className='w-[22px]' src={Wind} alt='' />
+                    <span className='block ml-1'>{(day.wind.speed * 3.6).toFixed(1)}km/h</span>
+                  </div>
+                  <div className='flex'>
+                    <img className='w-[22px]' src={Cloudsun} alt='' />
+                    <span className='block ml-1'>{day.weather[0].main}</span>
+                  </div>
+                </footer>
+              </article>
+            );
+          })}
         </section>
       )}
     </main>
   );
 }
+{/* Temp: {Math.round(day.main.temp)} Max: {Math.round(day.main.temp_max)} Min: {Math.round(day.main.temp_min)}
+Wind: {(day.wind.speed * 3.6).toFixed(1)} km/h Fecha:{fecha.toLocaleString('en-EN', { weekday: 'long', day: 'numeric', month: 'short' })}
+{day.weather[0].main} */}
 
 export default App;
