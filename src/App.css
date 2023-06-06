@@ -10,6 +10,24 @@
   text-align: center;
 }
 
+section article:first-child{
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+section article:first-child header{
+  border-top-left-radius: 0.75rem;
+}
+section article:nth-child(even) header{
+  background-color: #22252E;
+}
+section article:last-child{
+  border-top-right-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+section article:last-child header{
+  border-top-right-radius: 0.75rem;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
