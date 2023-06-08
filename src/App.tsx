@@ -83,7 +83,7 @@ function App() {
         ))}
       </select>
       {weather && (
-        <section className='flex justify-center h-[300px] mt-8'>
+        <section className='flex justify-center h-[300px] mt-8 flex-wrap'>
           {weather.list.map((day) => {
             const fecha = new Date(day.dt * 1000);
             return active === day.dt ? (
@@ -98,7 +98,7 @@ function App() {
                 <main className=' px-4 mb-7 '>
                   <h2 className='text-left pt-6 mb-4 '>{weather.city.name}</h2>
                   <div className='flex items-end'>
-                    <h2 className='font-bold text-8xl mt-[-5px]'>{day.main.temp.toFixed(0)}°C</h2>
+                    <h2 className='font-bold text-[4.2rem] sm:text-8xl mt-[-5px]'>{day.main.temp.toFixed(0)}°C</h2>
                     <img className='w-32 h-[90px] object-cover  ml-4' src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`} alt='' />
                   </div>
                 </main>
